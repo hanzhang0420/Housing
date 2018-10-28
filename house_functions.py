@@ -100,14 +100,29 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
     plt.legend(loc="best")
     return plt
 
+from sklearn.metrics import make_scorer 
+# Define a function to calculate RMSE
+def rmse(y_true, y_pred):
+    return np.sqrt(np.mean((y_true-y_pred)**2))
+
+# Define a function to calculate negative RMSE (as a score)
+def nrmse(y_true, y_pred):
+    return -1.0*rmse(y_true, y_pred)
+
+neg_rmse = make_scorer(nrmse)
+
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_absolute_error
 
 def print_model_results(model,name,cv,y,pred,X):
     
-    print('Mean_Absolute_Error',mean_absolute_error(y,pred))
-    print('Score',model.score(X,y))
-    result_xgb = cross_val_score(model, X, y, cv=cv,scoring='neg_mean_absolute_error')
-    print('Cross Validation '+name,np.mean(-result_xgb))
-    return None
+    print('RMSE',rmse(y,pred))
+    #print('Score',model.score(X,y))
+    result_xgb = cross_val_score(model, X, y, cv=cv,scoring=neg_rmse)
+    print('Cross Validation '+name,' ',np.mean(-result_xgb))
+    return np.mean(-result_xgb)
 
+# remove two outliers 
+#train_std.head()
+#data_dummy=data_dummy.drop(data_dummy.index[[523,1298]],axis=0)
+#data_loc.drop(data.index[[523,1298]], inplace=True,axis=0)
