@@ -1,7 +1,6 @@
 #Housing Price Prediction
 
 House Price Prediction
-Han Zhang
 
 Introduction 
 
